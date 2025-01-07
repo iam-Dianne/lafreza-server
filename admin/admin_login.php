@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':username', $username);
 
         if ($stmt->execute()) {
-            $admin = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($admin && password_verify($password, $admin['admin_password'])) {
                 session_start();
