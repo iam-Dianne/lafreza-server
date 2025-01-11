@@ -1,31 +1,25 @@
-<?php
-require_once '../shared/auth.php';
+<?php 
+
 require_once '../shared/connection.php';
+require_once '../shared/cors.php';
 
 header('Content-Type: application/json');
 error_reporting(E_ALL); 
 ini_set('display_errors', 0);
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+    $id = $_POST['id'] ?? '';
     $name = $_POST['name'] ?? '';
     $type = $_POST['type'] ?? '';
     $features = $_POST['features'] ?? '';
     $capacity = $_POST['capacity'] ?? '';
     $price = $_POST['price'] ?? '';
-    
-    echo $data;
 
-    if (empty($name) || empty($type) || empty($capacity) || empty($price)) {
-
-        echo json_encode(['success' => false, 'message' => 'Missing fields: ' . implode(', ', [
-        empty($name) ? 'name' : '',
-        empty($type) ? 'type' : '',
-        empty($capacity) ? 'capacity' : '',
-        empty($price) ? 'price' : ''
-             ])]);
+    if (empty($id) || empty($name) || empty($type) || empty($capacity) || empty($price)) {
+        echo json_encode(['success' => false, 'message' => 'Missing required fields.']);
         exit;
     }
+
 
     $uploadDir = '../uploads/accomodations';
     $imagePaths = [];
@@ -62,30 +56,30 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO accomodations (accomodation_name, accomodation_type, features, capacity, price)
-                        VALUES (:name, :type, :features, :capacity, :price)");
+        $stmt = $pdo->prepare("UPDATE accomodations SET accomodation_name = :name, accomodation_type = :type, features = :features, capacity = :capacity, price = :price WHERE id = :id");
 
+        $stmt->bindParam(':id', $id);
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':type', $type);
         $stmt->bindParam(':features', $features);
         $stmt->bindParam(':capacity', $capacity);
         $stmt->bindParam(':price', $price);
 
-        if ($stmt->execute()) {
-            $accommodationId = $pdo->lastInsertId();
-
+        if($stmt->execute()) {
             if (!empty($imagePaths)) {
-                $imageStmt = $pdo->prepare("INSERT INTO accommodations_images (accomodation_id, image_path) 
-                        VALUES (:accomodation_id, :image_path)");
+                $imageStmt = $pdo->prepare("INSERT INTO accommodations_images (accomodation_id, image_path) VALUES (:accomodation_id, :image_path)");
 
                 foreach ($imagePaths as $path) {
-                    $imageStmt->bindParam(':accomodation_id', $accommodationId);
+                    $imageStmt->bindParam(':accomodation_id', $id);
                     $imageStmt->bindParam(':image_path', $path);
                     $imageStmt->execute();
                 }
             }
-            echo json_encode(['success' => true, 'message' => 'Accommodation added successfully.']);
-        }  else {
+
+            error_log("ID: $id, Name: $name, Type: $type, Features: $features, Capacity: $capacity, Price: $price");
+
+            echo json_encode(['success' => true, 'message' => 'Accomodation updated.']);
+        } else {
             $errorInfo = $stmt->errorInfo();
             echo json_encode(['success' => false, 'message' => 'Database error: ' . $errorInfo[2]]);
         }
@@ -93,5 +87,4 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (PDOException $e) {
         echo json_encode(['success' => false, 'message' => 'Error ' . $e->getMessage()]);
     }
-
 }
