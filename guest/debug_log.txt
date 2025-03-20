@@ -1,8 +1,0 @@
-Array
-(
-    [email] => staks@example.com
-    [password] => staks00
-)
-Email: staks@example.com, Password: staks00
-Email: staks@example.com, Password: staks00
-Email: staks@example.com, Password: staks00
