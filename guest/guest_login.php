@@ -27,9 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $guest = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($guest && password_verify($password, $guest['guest_password'])) {
-                // session_start();
-                // $_SESSION['guest_logged_in'] = true;
-                // $_SESSION['guest_email'] = $guest['guest_email'];
+                session_start();
+                $_SESSION['guest_logged_in'] = true;
+                $_SESSION['guest_email'] = $guest['guest_email'];
 
                 echo json_encode(['success' => true, 'message' => 'Successfully logged in.']);
             } else {
