@@ -30,8 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_start();
                 $_SESSION['guest_logged_in'] = true;
                 $_SESSION['guest_email'] = $guest['guest_email'];
+                $_SESSION['guest_id'] = $guest['id'];
 
-                echo json_encode(['success' => true, 'message' => 'Successfully logged in.']);
+                echo json_encode(['success' => true, 'message' => 'Successfully logged in.', 'data' => ['guest_id' => $guest['id']]]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Invalid username or password']);
             }
