@@ -19,17 +19,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $stmt = $pdo->prepare("SELECT * FROM admin_accounts WHERE admin_username = :username");
+        $stmt = $pdo->prepare("SELECT * FROM staff_accounts WHERE staff_username = :username");
         $stmt->bindParam(':username', $username);
 
         if ($stmt->execute()) {
-            $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+            $staff = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($admin && password_verify($password, $admin['admin_password'])) {
+            if ($staff && password_verify($password, $staff['staff_password'])) {
                 session_start();
-                $_SESSION['admin_logged_in'] = true;
-                $_SESSION['admin_username'] = $admin['admin_username'];
-                $_SESSION['admin_name'] = $admin['admin_name'];
+                $_SESSION['staff_logged_in'] = true;
+                $_SESSION['staff_username'] = $staff['staff_username'];
+                $_SESSION['staff_name'] = $staff['staff_name'];
 
                 echo json_encode(['success' => true, 'message' => 'Successfully logged in.']);
             } else {
