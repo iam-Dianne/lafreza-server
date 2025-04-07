@@ -1,6 +1,6 @@
 <?php
 require_once '../shared/connection.php';
-require_once '../shared/cors.php';
+require_once '../shared/auth.php';
 
 header('Content-Type: application/json');
 session_start();
