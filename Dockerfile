@@ -1,16 +1,17 @@
 # Use official PHP image with Apache
 FROM php:8.2-apache
 
-# Install necessary PHP extensions
-RUN apt-get update && apt-get install -y libapache2-mod-php \
-    && docker-php-ext-install mysqli pdo pdo_mysql \
-    && a2enmod rewrite
+# Enable required PHP extensions
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Copy your PHP files into the Apache document root
+# Enable Apache modules
+RUN a2enmod rewrite
+
+# Copy your app into the Apache root
 COPY . /var/www/html/
 
-# Set proper permissions
+# Set permissions (optional but recommended)
 RUN chown -R www-data:www-data /var/www/html
 
-# Expose port 80
+# Expose port 80 (default)
 EXPOSE 80
